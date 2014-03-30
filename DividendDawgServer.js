@@ -22,38 +22,16 @@
     app = http.createServer(function(req, res) {
         var pathname = url.parse(req.url, true).pathname;
 
-        function serveHTMLPage(path) {
+        function serveFile(path, contentType) {
             res.writeHead(200, {
-                'Content-Type': 'text/html'
+                'Content-Type': contentType
             });
             return fs.readFile(path, {
                 'encoding': 'utf8'
             }, function(err, data) {
                 return res.end(data);
             });
-        };
-
-        function serveJSFile(path) {
-            res.writeHead(200, {
-                'Content-Type': 'application/javascript'
-            });
-            return fs.readFile(path, {
-                'encoding': 'utf8'
-            }, function(err, data) {
-                return res.end(data);
-            });
-        };
-
-        function serveCSSFile(path) {
-            res.writeHead(200, {
-                'Content-Type': 'text/css'
-            });
-            return fs.readFile(path, {
-                'encoding': 'utf8'
-            }, function(err, data) {
-                return res.end(data);
-            });
-        };
+        }
 
         function parseHtml(responseText) {
             return jsdom.env(responseText, ['http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js'], function(errors, window) {
@@ -102,7 +80,7 @@
                     'yield_rows': dividendYieldArray
                 }));
             });
-        };
+        }
 
         function getDividendTable() {
             var xhr, query;
@@ -141,29 +119,29 @@
             });
             xhr.write(querystring.stringify(post_data));
             xhr.end();
-        };
+        }
 
-        console.log('request to "' + pathname + '"');
+        console.log('Request to "' + pathname + '"');
 
         switch (pathname) {
             case '/getDividendTable':
                 return getDividendTable();
             case '/':
-                return serveHTMLPage('index.html');
+                return serveFile('index.html', 'text/html');
             case '/index.html':
-                return serveHTMLPage('index.html');
+                return serveFile('index.html', 'text/html');
             case '/ng.html':
-                return serveHTMLPage('ng.html');
+                return serveFile('ng.html', 'text/html');
             case '/hb.html':
-                return serveHTMLPage('hb.html');
+                return serveFile('hb.html', 'text/html');
             case '/ember.html':
-                return serveHTMLPage('ember.html');
+                return serveFile('ember.html', 'text/html');
             case '/lib/ember-table.js':
-                return serveJSFile('lib/ember-table.js');
+                return serveFile('lib/ember-table.js', 'application/javascript');
             case '/lib/antiscroll.js':
-                return serveJSFile('lib/antiscroll.js');
+                return serveFile('lib/antiscroll.js', 'application/javascript');
             case '/lib/ember-table.css':
-                return serveCSSFile('lib/ember-table.css');
+                return serveFile('lib/ember-table.css', 'text/css');
             default:
                 res.writeHead(404);
                 return res.end('404 NOT FOUND');
