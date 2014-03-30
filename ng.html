@@ -1,0 +1,40 @@
+<!doctype html>
+<html ng-app="DividendDawg">
+	<head>
+        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/ng-grid/2.0.7/ng-grid.min.css">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ng-grid/2.0.7/ng-grid.min.js"></script>
+	</head>
+	<body>
+        <div ng-controller="DDController" style="margin: 0 auto;padding:30px;">
+
+            <div ng-grid="ddGrid" style="height:700px;"></div>
+        </div>
+	<script type="text/javascript">
+        (function() {
+            'use strict';
+            angular.module('DividendDawg', [
+                'DividendDawg.controllers',
+                'ngGrid'
+            ]);
+
+            angular.module('DividendDawg.controllers', []).controller('DDController', ['$scope', '$http', function ($scope, $http) {
+                $http.get('/getDividendTable', {
+                    params: {}
+                }).success(function(data, status, headers, config) {
+                    if (data.yield_rows !== undefined) {
+                        $scope.tableRecords = data.yield_rows;
+                    }
+                }).error(function(data, status, headers, config) {
+                });
+
+                $scope.ddGrid = {
+                    data: 'tableRecords',
+
+                };
+            }]);
+        })();
+	</script>
+	</body>
+</html>

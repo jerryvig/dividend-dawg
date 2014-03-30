@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/cupertino/jquery-ui.min.css">
+		<link rel="stylesheet" type="text/css" href="//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script type="text/javascript" charset="utf8" src="//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+	</head>
+	<body>
+	<div id="contentDiv" style="width:100%;margin:0px auto;">
+		<table style="margin: 0px auto;">
+			<tr>
+				<td><div id="startDateDiv" style="margin:0px auto;"></div></td>
+				<td><div id="endDateDiv" style="margin:0px auto;"></div></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><input id="getDividendsTableInput" type="submit" value="Get Dividends"></td>
+			</tr>
+		</table>
+	</div>
+	<script type="text/javascript">
+		$('#startDateDiv').datepicker();
+		$('#endDateDiv').datepicker();
+		$('#getDividendsTableInput')
+			.button()
+			.on('click', function(){
+				var startDate = $.datepicker.formatDate( 'yy-mm-dd', $('#startDateDiv').datepicker('getDate')),
+                    endDate = $.datepicker.formatDate( 'yy-mm-dd', $('#endDateDiv').datepicker('getDate')),
+                    getParams = {
+					    'start_date': startDate,
+					    'end_date': endDate
+				    };
+
+				$('#tableDiv').remove();
+				$('#contentDiv').append('<div id="tableDiv"></div>');
+
+				$.getJSON('/getDividendTable', getParams, function(json){
+					var dataTable = $('<table id="dataTable" cellpadding="3" style="border:1px solid;margin: 0px auto;">');
+					dataTable.append('<tr><th>Ticker</th><th>Name</th><th>Ex Date</th><th>Pay Date</th><th>Payout</th><th>Yield</th></tr>')
+	
+					json.yield_rows.forEach(function(yield_row){
+						var trHTML = '<tr><td>' + yield_row.tickerText + '</td>'+
+						'<td>' + yield_row.companyName + '</td>'+
+						'<td>' + yield_row.exDate + '</td>'+
+						'<td>' + yield_row.payDate + '</td>'+
+						'<td>' + yield_row.payout + '</td>'+
+						'<td>' + yield_row.dividendYield + '</td></tr>';
+						dataTable.append(trHTML);
+					});
+
+					$('#tableDiv').append(dataTable);
+					$('#dataTable').dataTable();
+
+				}).fail(function(){
+					alert('FAILED TO RETRIEVE THE HTTP RESPONSE');
+				});
+		});
+	</script>
+	</body>
+</html>

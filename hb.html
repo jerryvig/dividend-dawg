@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
+    <style>
+        #table {
+            width:56.0%;
+            margin:0 auto;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div id="table"></div>
+<script id="table-template" type="text/x-handlebars-template">
+    <table class="table table-striped">
+        {{#each yield_rows}}
+            <tr>
+                <td> {{tickerText}} </td>
+                <td> {{companyName}} </td>
+                <td> {{dividendYield}} </td>
+            </tr>
+        {{/each}}
+    </table>
+</script>
+<script type="text/javascript">
+    var template = Handlebars.compile($('#table-template').html());
+
+    $.getJSON('/getDividendTable', function (context) {
+        $('#table').html( template(context) );
+    }).fail(function(){
+       alert('HTTP REQUEST FAILED');
+    });
+</script>
+</body>
+</html>
