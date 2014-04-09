@@ -62,6 +62,10 @@
                     return bDiv - aDiv;
                 });
 
+                res.writeHead(200, {
+                    'Content-Type': 'application/json'
+                });
+
                 return res.end(JSON.stringify({
                     'yield_rows': dividendYieldArray
                 }));
@@ -90,10 +94,6 @@
             }, function(resp) {
                 var responseText;
 
-                res.writeHead(200, {
-                    'Content-Type': 'application/json'
-                });
-
                 resp.setEncoding('utf8');
                 resp.on('data', function (chunk) {
                     responseText += chunk;
@@ -115,5 +115,5 @@
 
     app.use(express.static(__dirname + '/static'));
     app.listen(port);
-    console.log("Express started and listening on port " + port);
+    console.log("Express started and is listening on port " + port);
 }).call(this);
