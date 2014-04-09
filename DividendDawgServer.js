@@ -114,6 +114,8 @@
     });
 
     app.use(express.static(__dirname + '/static'));
+    app.use('/bower_components', express.static(__dirname + '/bower_components'));
+
     app.listen(port);
     console.log("Express started and is listening on port " + port);
 }).call(this);
