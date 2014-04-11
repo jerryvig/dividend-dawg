@@ -1,6 +1,7 @@
-function doAC(_content) {
+(function(window) {
     'use strict';
-    var COLUMN_WIDTH = 160;
+    var COLUMN_WIDTH = 160,
+        NUM_ROWS = 100;
 
     window.DividendDawg = Ember.Application.create();
 
@@ -8,7 +9,7 @@ function doAC(_content) {
         startDate: (new Date()).toISOString().substr(0, 10),
         endDate: (new Date()).toISOString().substr(0, 10),
 
-        numRows: 100,
+        numRows: NUM_ROWS,
 
         columns: Ember.computed(function() {
             var tickerColumn = Ember.Table.ColumnDefinition.create({
@@ -63,12 +64,16 @@ function doAC(_content) {
             return [tickerColumn, nameColumn, exDateColumn, payDateColumn, payoutColumn, yieldColumn];
         }),
 
-        content: _content
+        content: Ember.ArrayProxy.create({
+            content: new Array(NUM_ROWS),
+            init: function() {
+                var self = this;
+                Ember.$.getJSON('/getDividendTable', function(json){
+                    self.set('content', json.yield_rows);
+                }).fail(function() {
+                    alert('HTTP REQUEST FAILED.');
+                });
+            }
+        })
     });
-}
-
-Ember.$.getJSON('/getDividendTable', function(json) {
-    doAC(json.yield_rows);
-}).fail(function() {
-    alert('HTTP REQUEST FAILED.');
-});
+})(window);
