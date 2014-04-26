@@ -1,7 +1,7 @@
 (function(window) {
     'use strict';
     var COLUMN_WIDTH = 160,
-        NUM_ROWS = 100;
+        NUM_ROWS = 500;
 
     window.DividendDawg = Ember.Application.create();
 
@@ -66,14 +66,37 @@
 
         content: Ember.ArrayProxy.create({
             content: new Array(NUM_ROWS),
-            init: function() {
-                var self = this;
-                Ember.$.getJSON('/getDividendTable', function(json){
+            init: function(e) {
+                var self = this,
+                startDateTime = (new Date()).getTime(),
+                    query = {
+                        start_date: (new Date()).toISOString().substr(0, 10),
+                        end_date: (new Date(startDateTime + 604800000)).toISOString().substr(0, 10)
+                    };
+
+                console.log('startDateTime = ' + startDateTime);
+                console.log('query = ' + JSON.stringify(query));
+
+                Ember.$.getJSON('/getDividendTable', query, function(json){
                     self.set('content', json.yield_rows);
                 }).fail(function() {
                     alert('HTTP REQUEST FAILED.');
                 });
             }
-        })
+        }),
+
+        populateTable: function () {
+            var query = {
+                start_date: this.get('startDate'),
+                end_date: this.get('endDate')
+            },
+                self = this;    
+
+            Ember.$.getJSON('/getDividendTable', query, function(json){
+                self.set('content', json.yield_rows);
+            }).fail(function() {
+                alert('HTTP REQUEST FAILED.');
+            });
+        }.observes('startDate', 'endDate')
     });
 })(window);
